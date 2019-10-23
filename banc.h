@@ -10,8 +10,12 @@ class Banc
 {
 public:
     Banc();
+    void initPoissons(QVector3D vitesse, float size);
+
+
     int nbPoissons = 0;
     std::vector<Poisson> vecPoisson;
+
 
 protected:
     double rangePos = 1000.0;
