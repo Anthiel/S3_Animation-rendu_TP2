@@ -17,11 +17,13 @@ TEMPLATE = app
 SOURCES += main.cpp\
         princ.cpp \
         glarea.cpp \
-    banc.cpp
+    banc.cpp \
+    poisson.cpp
 
 HEADERS  += princ.h \
         glarea.h \
-    banc.h
+    banc.h \
+    poisson.h
 
 FORMS    += princ.ui
 
