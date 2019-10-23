@@ -23,7 +23,7 @@ public:
 
 
     QVector3D position,vitesse;
-    float size;
+    float size,distance;
     /*lifeTimeLeft,initialLifeTime;
     QMatrix4x4 modelMatrixParticule;*/
 };

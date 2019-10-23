@@ -15,8 +15,9 @@ Poisson::Poisson(QVector3D position, QVector3D vitesse, float size)
     this->size=size;
 }
 
-bool Poisson::dans_voisinage( QVector3D p){
-
+bool Poisson::dans_voisinage( QVector3D p)
+{
+    return distance<position.distanceToPoint(p);
 }
 
 void Poisson::animate(float dt)
