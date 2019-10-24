@@ -1,11 +1,13 @@
 <RCC>
     <qresource prefix="/">
-        <file>shaders/billboard.fsh</file>
-        <file>shaders/billboard.vsh</file>
+        <file>shaders/poisson.fsh</file>
+        <file>shaders/poisson.vsh</file>
         <file>shaders/simple.fsh</file>
         <file>shaders/simple.vsh</file>
         <file>textures/puff.png</file>
         <file>textures/puffs.png</file>
         <file>textures/ground.jpg</file>
+        <file>textures/number.png</file>
+        <file>textures/poisson1.png</file>
     </qresource>
 </RCC>

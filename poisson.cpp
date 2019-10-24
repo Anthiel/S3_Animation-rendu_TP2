@@ -24,3 +24,19 @@ void Poisson::animate(float dt)
 {
     this->position+=dt*vitesse;
 }
+
+void Poisson::affiche(QOpenGLShaderProgram *program_poisson){
+    modelMatrix.setToIdentity();
+    modelMatrix.translate(position);
+
+    if(vitesse.length() != 0){
+        qDebug() << "v=" << vitesse.length();
+        modelMatrix.rotate(0,0,1,0);
+        qDebug() << "y/v=" << acos(vitesse.y()/vitesse.length())*180.0 / M_PI;
+        modelMatrix.rotate(acos(vitesse.y()/vitesse.length())*180.0 / M_PI - 90.0,0,0,1);
+    }
+    program_poisson->setUniformValue("modelMatrix", modelMatrix);
+    program_poisson->setUniformValue("pSize", size);
+
+    glDrawArrays(GL_TRIANGLES, 0, 3);
+}

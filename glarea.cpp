@@ -59,14 +59,14 @@ void GLArea::initializeGL()
     program_sol->setUniformValue("texture", 0);
 
     // shader de billboard
-    program_particule = new QOpenGLShaderProgram(this);
-    program_particule->addShaderFromSourceFile(QOpenGLShader::Vertex, ":/shaders/billboard.vsh");
-    program_particule->addShaderFromSourceFile(QOpenGLShader::Fragment, ":/shaders/billboard.fsh");
-    if (! program_particule->link()) {  // édition de lien des shaders dans le shader program
+    program_poisson = new QOpenGLShaderProgram(this);
+    program_poisson->addShaderFromSourceFile(QOpenGLShader::Vertex, ":/shaders/poisson.vsh");
+    program_poisson->addShaderFromSourceFile(QOpenGLShader::Fragment, ":/shaders/poisson.fsh");
+    if (! program_poisson->link()) {  // édition de lien des shaders dans le shader program
         qWarning("Failed to compile and link shader program:");
-        qWarning() << program_particule->log();
+        qWarning() << program_poisson->log();
     }
-    program_particule->setUniformValue("texture", 0);
+    program_poisson->setUniformValue("texture", 0);
 }
 
 
@@ -110,25 +110,20 @@ void GLArea::makeGLObjects()
 
     // Création d'une particule de fumée
     GLfloat vertices_particule[] = {
-       -0.5f, 0.5f, 0.0f,
-       -0.5f,-0.5f, 0.0f,
-        0.5f, 0.5f, 0.0f,
-       -0.5f,-0.5f, 0.0f,
+       -0.5f, 0.0f, 0.0f,
         0.5f,-0.5f, 0.0f,
         0.5f, 0.5f, 0.0f
+
     };
 
     GLfloat texCoords_particule[] = {
-            0.0f, 0.0f,
-            0.0f, 1.0f,
-            1.0f, 0.0f,
-            0.0f, 1.0f,
-            1.0f, 1.0f,
-            1.0f, 0.0f
-        };
+        0.0f, 0.5f,
+        1.0f, 1.0f,
+        1.0f, 0.0f
+    };
 
     QVector<GLfloat> vertData_particule;
-    for (int i = 0; i < 6; ++i) {
+    for (int i = 0; i < 3; ++i) {
         // coordonnées sommets
         for (int j = 0; j < 3; j++)
             vertData_particule.append(vertices_particule[i*3+j]);
@@ -148,9 +143,9 @@ void GLArea::makeGLObjects()
         qDebug() << "load image ground.jpg failed";
     textures[0] = new QOpenGLTexture(image_sol);
 
-    QImage image_particule(":/textures/puff.png");
+    QImage image_particule(":/textures/number.png");
     if (image_particule.isNull())
-        qDebug() << "load image puff.png failed";
+        qDebug() << "load image poisson1.png failed";
     textures[1] = new QOpenGLTexture(image_particule);
 }
 
@@ -210,32 +205,33 @@ void GLArea::paintGL()
     program_sol->release();
 
 
-    // Affichage d'une particule
+    // Affichage des poissons
+    glDepthMask(GL_FALSE);
     vbo_particule.bind();
-    program_particule->bind(); // active le shader program des particules
+    program_poisson->bind(); // active le shader program des poissons
 
-    QMatrix4x4 modelMatrixParticule;
-    modelMatrixParticule.translate(10.0f, 1.0f, 4.0f);
-    program_particule->setUniformValue("projectionMatrix", projectionMatrix);
-    program_particule->setUniformValue("viewMatrix", viewMatrix);
-    program_particule->setUniformValue("modelMatrix", modelMatrixParticule);
-    program_particule->setUniformValue("particleSize", 1.0f);
+    program_poisson->setUniformValue("projectionMatrix", projectionMatrix);
+    program_poisson->setUniformValue("viewMatrix", viewMatrix);
 
-    program_particule->setAttributeBuffer("in_position", GL_FLOAT, 0, 3, 5 * sizeof(GLfloat));
-    program_particule->setAttributeBuffer("in_uv", GL_FLOAT, 3 * sizeof(GLfloat), 2, 5 * sizeof(GLfloat));
-    program_particule->enableAttributeArray("in_position");
-    program_particule->enableAttributeArray("in_uv");
+    program_poisson->setAttributeBuffer("in_position", GL_FLOAT, 0, 3, 5 * sizeof(GLfloat));
+    program_poisson->setAttributeBuffer("in_uv", GL_FLOAT, 3 * sizeof(GLfloat), 2, 5 * sizeof(GLfloat));
+    program_poisson->enableAttributeArray("in_position");
+    program_poisson->enableAttributeArray("in_uv");
 
     textures[1]->bind();
     glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
     glEnable(GL_BLEND);
-    glDrawArrays(GL_TRIANGLES, 0, 6);
+
+    p1.affiche(program_poisson);
+    p2.affiche(program_poisson);
+
     glDisable(GL_BLEND);
     textures[1]->release();
 
-    program_particule->disableAttributeArray("in_position");
-    program_particule->disableAttributeArray("in_uv");
-    program_particule->release();
+    program_poisson->disableAttributeArray("in_position");
+    program_poisson->disableAttributeArray("in_uv");
+    program_poisson->release();
+    glDepthMask(GL_TRUE);
 }
 
 
