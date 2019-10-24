@@ -29,11 +29,17 @@ void Poisson::affiche(QOpenGLShaderProgram *program_poisson){
     modelMatrix.setToIdentity();
     modelMatrix.translate(position);
 
+    if(vitesse.x() != 0 || vitesse.z() != 0){
+        int signeAngle=1;
+        if(vitesse.z() != 0) signeAngle=-vitesse.z()/abs(vitesse.z());
+        float angleXZ=signeAngle *acos(vitesse.x()/sqrt(pow(vitesse.x(),2)+pow(vitesse.z(),2)))*180.0 / M_PI +180;
+        //qDebug() << "angleXZ" << angleXZ;
+        modelMatrix.rotate(angleXZ,0,1,0);
+    }
     if(vitesse.length() != 0){
-        qDebug() << "v=" << vitesse.length();
-        modelMatrix.rotate(0,0,1,0);
-        qDebug() << "y/v=" << acos(vitesse.y()/vitesse.length())*180.0 / M_PI;
-        modelMatrix.rotate(acos(vitesse.y()/vitesse.length())*180.0 / M_PI - 90.0,0,0,1);
+        float angleY=acos(vitesse.y()/vitesse.length())*180.0 / M_PI - 90.0;
+        //qDebug() << "angleY" << angleY;
+        modelMatrix.rotate(angleY,0,0,1);
     }
     program_poisson->setUniformValue("modelMatrix", modelMatrix);
     program_poisson->setUniformValue("pSize", size);

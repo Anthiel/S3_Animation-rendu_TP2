@@ -75,32 +75,70 @@ void GLArea::makeGLObjects()
     // Création du sol
     float tailleSol = 20.0f;
 
-    GLfloat vertices_sol[] = {
-       -tailleSol, 0.0f,-tailleSol,
-       -tailleSol, 0.0f, tailleSol,
-        tailleSol, 0.0f, tailleSol,
-        tailleSol, 0.0f, tailleSol,
-        tailleSol, 0.0f,-tailleSol,
-       -tailleSol, 0.0f,-tailleSol
+    GLfloat vertices_box[] = {
+       -tailleSol,-tailleSol,-tailleSol,
+       +tailleSol,-tailleSol,-tailleSol,
+       -tailleSol,-tailleSol,+tailleSol,
+       +tailleSol,-tailleSol,+tailleSol,
+       -tailleSol,+tailleSol,-tailleSol,
+       +tailleSol,+tailleSol,-tailleSol,
+       -tailleSol,+tailleSol,+tailleSol,
+       +tailleSol,+tailleSol,+tailleSol,
+
+       -tailleSol,-tailleSol,-tailleSol,
+       -tailleSol,-tailleSol,+tailleSol,
+       -tailleSol,+tailleSol,-tailleSol,
+       -tailleSol,+tailleSol,+tailleSol,
+       +tailleSol,-tailleSol,-tailleSol,
+       +tailleSol,-tailleSol,+tailleSol,
+       +tailleSol,+tailleSol,-tailleSol,
+       +tailleSol,+tailleSol,+tailleSol,
+
+       -tailleSol,-tailleSol,-tailleSol,
+       -tailleSol,+tailleSol,-tailleSol,
+       +tailleSol,-tailleSol,-tailleSol,
+       +tailleSol,+tailleSol,-tailleSol,
+       -tailleSol,-tailleSol,+tailleSol,
+       -tailleSol,+tailleSol,+tailleSol,
+       +tailleSol,-tailleSol,+tailleSol,
+       +tailleSol,+tailleSol,+tailleSol
     };
 
-    GLfloat texCoords_sol[] = {
-            0.0f, 0.0f,
-            0.0f, 1.0f,
-            1.0f, 1.0f,
-            1.0f, 1.0f,
-            1.0f, 0.0f,
-            0.0f, 0.0f
+    GLfloat rgb_box[] = {
+            255/255.0f, 0/255.0f, 0/255.0f,
+            255/255.0f, 0/255.0f, 0/255.0f,
+            255/255.0f, 0/255.0f, 0/255.0f,
+            255/255.0f, 0/255.0f, 0/255.0f,
+            255/255.0f, 0/255.0f, 0/255.0f,
+            255/255.0f, 0/255.0f, 0/255.0f,
+            255/255.0f, 0/255.0f, 0/255.0f,
+            255/255.0f, 0/255.0f, 0/255.0f,
+            0/255.0f, 255/255.0f, 0/255.0f,
+            0/255.0f, 255/255.0f, 0/255.0f,
+            0/255.0f, 255/255.0f, 0/255.0f,
+            0/255.0f, 255/255.0f, 0/255.0f,
+            0/255.0f, 255/255.0f, 0/255.0f,
+            0/255.0f, 255/255.0f, 0/255.0f,
+            0/255.0f, 255/255.0f, 0/255.0f,
+            0/255.0f, 255/255.0f, 0/255.0f,
+            0/255.0f, 0/255.0f, 255/255.0f,
+            0/255.0f, 0/255.0f, 255/255.0f,
+            0/255.0f, 0/255.0f, 255/255.0f,
+            0/255.0f, 0/255.0f, 255/255.0f,
+            0/255.0f, 0/255.0f, 255/255.0f,
+            0/255.0f, 0/255.0f, 255/255.0f,
+            0/255.0f, 0/255.0f, 255/255.0f,
+            0/255.0f, 0/255.0f, 255/255.0f
         };
 
     QVector<GLfloat> vertData_sol;
-    for (int i = 0; i < 6; ++i) {
+    for (int i = 0; i < 24; ++i) {
         // coordonnées sommets
         for (int j = 0; j < 3; j++)
-            vertData_sol.append(vertices_sol[i*3+j]);
+            vertData_sol.append(vertices_box[i*3+j]);
         // coordonnées texture
-        for (int j = 0; j < 2; j++)
-            vertData_sol.append(texCoords_sol[i*2+j]);
+        for (int j = 0; j < 3; j++)
+            vertData_sol.append(rgb_box[i*3+j]);
     }
 
     vbo_sol.create();
@@ -191,17 +229,15 @@ void GLArea::paintGL()
     program_sol->setUniformValue("viewMatrix", viewMatrix);
     program_sol->setUniformValue("modelMatrix", modelMatrixSol);
 
-    program_sol->setAttributeBuffer("in_position", GL_FLOAT, 0, 3, 5 * sizeof(GLfloat));
-    program_sol->setAttributeBuffer("in_uv", GL_FLOAT, 3 * sizeof(GLfloat), 2, 5 * sizeof(GLfloat));
+    program_sol->setAttributeBuffer("in_position", GL_FLOAT, 0, 3, 6 * sizeof(GLfloat));
+    program_sol->setAttributeBuffer("colAttr", GL_FLOAT, 3 * sizeof(GLfloat), 3, 6 * sizeof(GLfloat));
     program_sol->enableAttributeArray("in_position");
-    program_sol->enableAttributeArray("in_uv");
+    program_sol->enableAttributeArray("colAttr");
 
-    textures[0]->bind();
-    glDrawArrays(GL_TRIANGLES, 0, 6);
-    textures[0]->release();
+    glDrawArrays(GL_LINES, 0, 24);
 
     program_sol->disableAttributeArray("in_position");
-    program_sol->disableAttributeArray("in_uv");
+    program_sol->disableAttributeArray("colAttr");
     program_sol->release();
 
 
@@ -237,7 +273,7 @@ void GLArea::paintGL()
 
 void GLArea::keyPressEvent(QKeyEvent *ev)
 {
-    float da = 1.0f;
+    float da = 0.1f;
 
     switch(ev->key()) {
         case Qt::Key_A :
@@ -269,7 +305,8 @@ void GLArea::keyPressEvent(QKeyEvent *ev)
             zRot += da;
             update();
             break;
-    }
+        }
+    update();
 }
 
 

@@ -1,12 +1,13 @@
 attribute vec4 in_position;
-attribute vec4 in_uv;
+attribute vec3 colAttr;
 varying vec4 uv;
+varying vec3 col;
 
 uniform mat4 projectionMatrix;
 uniform mat4 viewMatrix;
 uniform mat4 modelMatrix;
 
 void main() {
-   uv = in_uv;
-   gl_Position = projectionMatrix * viewMatrix * modelMatrix * in_position;
+    col=colAttr;
+    gl_Position = projectionMatrix * viewMatrix * modelMatrix * in_position;
 }
