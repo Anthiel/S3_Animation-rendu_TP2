@@ -276,35 +276,41 @@ void GLArea::keyPressEvent(QKeyEvent *ev)
     float da = 0.1f;
 
     switch(ev->key()) {
-        case Qt::Key_A :
-            xRot -= da;
-            update();
-            break;
+    case Qt::Key_A :
+        //xRot -= da;
+        p1.vitesse[0]-=da;
+        p2.position[0]-=da;
+        break;
 
-        case Qt::Key_Q :
-            xRot += da;
-            update();
-            break;
+    case Qt::Key_Q :
+        //xRot += da;
+        p1.vitesse[0]+=da;
+        p2.position[0]+=da;
+        break;
 
-        case Qt::Key_Z :
-            yRot -= da;
-            update();
-            break;
+    case Qt::Key_Z :
+        //yRot -= da;
+        p1.vitesse[1]-=da;
+        p2.position[1]-=da;
+        break;
 
-        case Qt::Key_S :
-            yRot += da;
-            update();
-            break;
+    case Qt::Key_S :
+        //yRot += da;
+        p1.vitesse[1]+=da;
+        p2.position[1]+=da;
+        break;
 
-        case Qt::Key_E :
-            zRot -= da;
-            update();
-            break;
+    case Qt::Key_E :
+        //zRot -= da;
+        p1.vitesse[2]-=da;
+        p2.position[2]-=da;
+        break;
 
-        case Qt::Key_D :
-            zRot += da;
-            update();
-            break;
+    case Qt::Key_D :
+        //zRot += da;
+        p1.vitesse[2]+=da;
+        p2.position[2]+=da;
+        break;
         }
     update();
 }

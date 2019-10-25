@@ -52,8 +52,8 @@ private:
     QOpenGLBuffer vbo_particule;
     QOpenGLTexture *textures[2];
 
-    Poisson p1 = Poisson(QVector3D(0,10,0),QVector3D(-4,0,0),1);
-    Poisson p2 = Poisson(QVector3D(-4,10,0),QVector3D(0,0,0),1);
+    Poisson p1 = Poisson(QVector3D(0,0,0),QVector3D(0,10,0),5);
+    Poisson p2 = Poisson(QVector3D(0,10,0),QVector3D(0,0,0),5);
     void makeGLObjects();
     void tearGLObjects();
 };
