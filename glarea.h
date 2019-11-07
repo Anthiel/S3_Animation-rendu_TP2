@@ -49,11 +49,10 @@ private:
     QOpenGLShaderProgram *program_sol;
     QOpenGLShaderProgram *program_poisson;
     QOpenGLBuffer vbo_sol;
-    QOpenGLBuffer vbo_particule;
+    QOpenGLBuffer vbo_poisson;
     QOpenGLTexture *textures[2];
 
-    Poisson p1 = Poisson(QVector3D(0,0,0),QVector3D(0,10,0),5);
-    Poisson p2 = Poisson(QVector3D(0,10,0),QVector3D(0,0,0),5);
+    Banc banc = Banc(500,50,55,60);
     void makeGLObjects();
     void tearGLObjects();
 };

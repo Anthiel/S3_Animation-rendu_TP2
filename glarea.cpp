@@ -21,7 +21,7 @@ GLArea::GLArea(QWidget *parent) :
     setFocus();                         // donne le focus
 
     timer = new QTimer(this);
-    timer->setInterval(50);           // msec
+    timer->setInterval(20);           // msec
     connect (timer, SIGNAL(timeout()), this, SLOT(onTimeout()));
     timer->start();
     elapsedTimer.start();
@@ -74,34 +74,36 @@ void GLArea::makeGLObjects()
 {
     // Création du sol
     float tailleSol = 20.0f;
-
+    float larg=banc.largeurAquarium/2.0f;
+    float haut=banc.hauteurAquarium/2.0f;
+    float prof=banc.profondeurAquarium/2.0f;
     GLfloat vertices_box[] = {
-       -tailleSol,-tailleSol,-tailleSol,
-       +tailleSol,-tailleSol,-tailleSol,
-       -tailleSol,-tailleSol,+tailleSol,
-       +tailleSol,-tailleSol,+tailleSol,
-       -tailleSol,+tailleSol,-tailleSol,
-       +tailleSol,+tailleSol,-tailleSol,
-       -tailleSol,+tailleSol,+tailleSol,
-       +tailleSol,+tailleSol,+tailleSol,
+       -larg,-haut,-prof,
+       +larg,-haut,-prof,
+       -larg,-haut,+prof,
+       +larg,-haut,+prof,
+       -larg,+haut,-prof,
+       +larg,+haut,-prof,
+       -larg,+haut,+prof,
+       +larg,+haut,+prof,
 
-       -tailleSol,-tailleSol,-tailleSol,
-       -tailleSol,-tailleSol,+tailleSol,
-       -tailleSol,+tailleSol,-tailleSol,
-       -tailleSol,+tailleSol,+tailleSol,
-       +tailleSol,-tailleSol,-tailleSol,
-       +tailleSol,-tailleSol,+tailleSol,
-       +tailleSol,+tailleSol,-tailleSol,
-       +tailleSol,+tailleSol,+tailleSol,
+       -larg,-haut,-prof,
+       -larg,-haut,+prof,
+       -larg,+haut,-prof,
+       -larg,+haut,+prof,
+       +larg,-haut,-prof,
+       +larg,-haut,+prof,
+       +larg,+haut,-prof,
+       +larg,+haut,+prof,
 
-       -tailleSol,-tailleSol,-tailleSol,
-       -tailleSol,+tailleSol,-tailleSol,
-       +tailleSol,-tailleSol,-tailleSol,
-       +tailleSol,+tailleSol,-tailleSol,
-       -tailleSol,-tailleSol,+tailleSol,
-       -tailleSol,+tailleSol,+tailleSol,
-       +tailleSol,-tailleSol,+tailleSol,
-       +tailleSol,+tailleSol,+tailleSol
+       -larg,-haut,-prof,
+       -larg,+haut,-prof,
+       +larg,-haut,-prof,
+       +larg,+haut,-prof,
+       -larg,-haut,+prof,
+       -larg,+haut,+prof,
+       +larg,-haut,+prof,
+       +larg,+haut,+prof
     };
 
     GLfloat rgb_box[] = {
@@ -146,33 +148,33 @@ void GLArea::makeGLObjects()
     vbo_sol.allocate(vertData_sol.constData(), vertData_sol.count() * int(sizeof(GLfloat)));
 
 
-    // Création d'une particule de fumée
-    GLfloat vertices_particule[] = {
+    // Création d'un poisson
+    GLfloat vertices_poisson[] = {
        -0.5f, 0.0f, 0.0f,
         0.5f,-0.5f, 0.0f,
         0.5f, 0.5f, 0.0f
 
     };
 
-    GLfloat texCoords_particule[] = {
+    GLfloat texCoords_poisson[] = {
         0.0f, 0.5f,
         1.0f, 1.0f,
         1.0f, 0.0f
     };
 
-    QVector<GLfloat> vertData_particule;
+    QVector<GLfloat> vertData_poisson;
     for (int i = 0; i < 3; ++i) {
         // coordonnées sommets
         for (int j = 0; j < 3; j++)
-            vertData_particule.append(vertices_particule[i*3+j]);
+            vertData_poisson.append(vertices_poisson[i*3+j]);
         // coordonnées texture
         for (int j = 0; j < 2; j++)
-            vertData_particule.append(texCoords_particule[i*2+j]);
+            vertData_poisson.append(texCoords_poisson[i*2+j]);
     }
 
-    vbo_particule.create();
-    vbo_particule.bind();
-    vbo_particule.allocate(vertData_particule.constData(), vertData_particule.count() * int(sizeof(GLfloat)));
+    vbo_poisson.create();
+    vbo_poisson.bind();
+    vbo_poisson.allocate(vertData_poisson.constData(), vertData_poisson.count() * int(sizeof(GLfloat)));
 
 
     // Création de textures
@@ -181,17 +183,17 @@ void GLArea::makeGLObjects()
         qDebug() << "load image ground.jpg failed";
     textures[0] = new QOpenGLTexture(image_sol);
 
-    QImage image_particule(":/textures/number.png");
-    if (image_particule.isNull())
+    QImage image_poisson(":/textures/poisson1.png");
+    if (image_poisson.isNull())
         qDebug() << "load image poisson1.png failed";
-    textures[1] = new QOpenGLTexture(image_particule);
+    textures[1] = new QOpenGLTexture(image_poisson);
 }
 
 
 void GLArea::tearGLObjects()
 {
     vbo_sol.destroy();
-    vbo_particule.destroy();
+    vbo_poisson.destroy();
     for (int i = 0; i < 2; i++)
         delete textures[i];
 }
@@ -234,6 +236,7 @@ void GLArea::paintGL()
     program_sol->enableAttributeArray("in_position");
     program_sol->enableAttributeArray("colAttr");
 
+    glLineWidth(3);
     glDrawArrays(GL_LINES, 0, 24);
 
     program_sol->disableAttributeArray("in_position");
@@ -243,7 +246,7 @@ void GLArea::paintGL()
 
     // Affichage des poissons
     glDepthMask(GL_FALSE);
-    vbo_particule.bind();
+    vbo_poisson.bind();
     program_poisson->bind(); // active le shader program des poissons
 
     program_poisson->setUniformValue("projectionMatrix", projectionMatrix);
@@ -258,8 +261,7 @@ void GLArea::paintGL()
     glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
     glEnable(GL_BLEND);
 
-    p1.affiche(program_poisson);
-    p2.affiche(program_poisson);
+    banc.affiche(program_poisson);
 
     glDisable(GL_BLEND);
     textures[1]->release();
@@ -277,39 +279,27 @@ void GLArea::keyPressEvent(QKeyEvent *ev)
 
     switch(ev->key()) {
     case Qt::Key_A :
-        //xRot -= da;
-        p1.vitesse[0]-=da;
-        p2.position[0]-=da;
+        xRot -= da;
         break;
 
     case Qt::Key_Q :
-        //xRot += da;
-        p1.vitesse[0]+=da;
-        p2.position[0]+=da;
+        xRot += da;
         break;
 
     case Qt::Key_Z :
-        //yRot -= da;
-        p1.vitesse[1]-=da;
-        p2.position[1]-=da;
+        yRot -= da;
         break;
 
     case Qt::Key_S :
-        //yRot += da;
-        p1.vitesse[1]+=da;
-        p2.position[1]+=da;
+        yRot += da;
         break;
 
     case Qt::Key_E :
-        //zRot -= da;
-        p1.vitesse[2]-=da;
-        p2.position[2]-=da;
+        zRot -= da;
         break;
 
     case Qt::Key_D :
-        //zRot += da;
-        p1.vitesse[2]+=da;
-        p2.position[2]+=da;
+        zRot += da;
         break;
         }
     update();
@@ -363,7 +353,7 @@ void GLArea::onTimeout()
     qint64 chrono = elapsedTimer.elapsed();
     dt = (chrono - old_chrono) / 1000.0f;
     old_chrono = chrono;
-
+    banc.anime(dt);
 
 
     update();

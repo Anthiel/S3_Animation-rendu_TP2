@@ -9,23 +9,24 @@
 class Banc
 {
 public:
-    Banc();
-    void initPoissons(QVector3D vitesse, float size);
-    void anime();
+    Banc(int nbPoissons, double largeur=40, double hauteur=40, double profondeur=40);
+    void initPoissons(QVector3D vitesse, float size, float coefPrecision);
+    void anime(float dt);
+    void affiche(QOpenGLShaderProgram *program_poisson);
 
 
     int nbPoissons = 0;
-    std::vector<Poisson> vecPoisson;
+    float vitesseMax = 10;
+    float poidsSeparation=1;
+    float poidsAlignement=1;
+    float poidsCohesion=1;
+    std::vector<Poisson> poissons;
 
-    double largeurAquarium = 10.0;
-    double hauteurAquarium = 10.0;
-    double profondeurAquarium = 10.0;
+    double largeurAquarium;
+    double hauteurAquarium;
+    double profondeurAquarium;
 
 
-protected:
-    float rangePos = 1000.0;
-    float rangeNeg = -1000.0;
-    int coefDivision = 100;
 };
 
 #endif // BANC_H
