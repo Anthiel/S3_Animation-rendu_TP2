@@ -16,10 +16,11 @@ public:
 
 
     int nbPoissons = 0;
-    float vitesseMax = 10;
+    float vitesseMax = 5;
     float poidsSeparation=1;
     float poidsAlignement=1;
     float poidsCohesion=1;
+    int distanceVoisinage=10;
     std::vector<Poisson> poissons;
 
     double largeurAquarium;

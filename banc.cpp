@@ -6,7 +6,7 @@ Banc::Banc(int nbPoissons, double largeur, double hauteur, double profondeur)
     this->largeurAquarium=largeur;
     this->hauteurAquarium=hauteur;
     this->profondeurAquarium=profondeur;
-    initPoissons(QVector3D(0.0, 0.0, 0.0), 3.0,100);
+    initPoissons(QVector3D(0.0, 0.0, 0.0), 2.0,100);
 }
 
 void Banc::initPoissons(QVector3D vitesse, float size, float coefPrecision){
@@ -26,7 +26,7 @@ void Banc::initPoissons(QVector3D vitesse, float size, float coefPrecision){
 void Banc::anime(float dt){
     std::vector<QVector3D> vSeparation, vAlignement, vCohesion;
     float nbvoisin,nbvoisinage;       //voisinage = voisin + obstacle + predateur
-    float distanceVoisinage,coefDist;
+    float coefDist;
     QVector3D tmpSeparation, tmpAlignement, tmpCohesion, projMur;
     for(int i = 0; i < nbPoissons; i++){
         nbvoisin=0;
@@ -34,16 +34,15 @@ void Banc::anime(float dt){
         tmpAlignement=QVector3D(0,0,0);
         tmpCohesion=QVector3D(0,0,0);
         for(int j = 0; j < nbPoissons; j++){
-            if(poissons[i].dans_voisinage(poissons[j].position)){
-                coefDist=poissons[i].position.distanceToPoint(poissons[j].position)*0.5;
+            if( i!=j &&poissons[i].dans_voisinage(poissons[j].position, distanceVoisinage)){
+                coefDist=poissons[i].position.distanceToPoint(poissons[j].position);
                 nbvoisin+=1/coefDist;
-                tmpSeparation+=poissons[j].position/coefDist;
-                tmpAlignement+=poissons[j].vitesse/coefDist;
-                tmpCohesion+=poissons[j].position/coefDist;
+                tmpSeparation+=(poissons[j].position-poissons[i].position)/coefDist;
+                tmpAlignement+=(poissons[j].vitesse-poissons[i].vitesse)/coefDist;
+                tmpCohesion+=(poissons[j].position-poissons[i].position)/coefDist;
             }
         }
         nbvoisinage=nbvoisin;
-        distanceVoisinage=3;
 
         // fear the box
         for(int k=0; k<10;k++){
@@ -93,24 +92,29 @@ void Banc::anime(float dt){
 
         //faire des truc pour separation
 
+        if(nbvoisin!=0){
+            tmpSeparation/=nbvoisinage;
+            tmpAlignement/=nbvoisin;
+            tmpCohesion/=nbvoisin;
 
-        tmpSeparation/=nbvoisinage;
-        tmpAlignement/=nbvoisin;
-        tmpCohesion/=nbvoisin;
 
-        vSeparation.push_back(-(tmpSeparation-poissons[i].position));
-        //vAlignement.push_back(tmpAlignement-poissons[i].vitesse);
-        vAlignement.push_back(poissons[i].vitesse-tmpAlignement);
-        vCohesion.push_back(tmpCohesion-poissons[i].position);
+            tmpSeparation=-(tmpSeparation);
+
+
+            tmpSeparation.normalize();
+            tmpAlignement.normalize();
+            tmpCohesion.normalize();
+        }
+
+        vSeparation.push_back(tmpSeparation);
+        vAlignement.push_back(tmpAlignement);
+        vCohesion.push_back(tmpCohesion);
     }
 
     for(int i = 0; i < nbPoissons; i++){
-        poissons[i].vitesse= poissons[i].vitesse + vSeparation[i] * poidsSeparation + vAlignement[i] * poidsAlignement + vCohesion[i] * poidsCohesion;
-        if(poissons[i].vitesse.length()>vitesseMax){
-            poissons[i].vitesse.normalize();
-            poissons[i].vitesse*=vitesseMax;
-        }
-
+        poissons[i].vitesse= poissons[i].vitesse + vSeparation[i] * poidsSeparation + vAlignement[i] * poidsAlignement +  vCohesion[i] * poidsCohesion;
+        poissons[i].vitesse.normalize();
+        poissons[i].vitesse*=vitesseMax;
         poissons[i].animate(dt);
     }
 

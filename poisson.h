@@ -14,7 +14,7 @@ public:
     Poisson(QVector3D position, QVector3D vitesse, float size);
 
     void animate(float dt);
-    bool dans_voisinage(QVector3D p);
+    bool dans_voisinage(QVector3D p,int distanceVoisinage);
     void affiche(QOpenGLShaderProgram *program_poisson);
 
 
@@ -23,7 +23,7 @@ public:
 
 
     QVector3D position,vitesse;
-    float size,distanceVoisinage=5;
+    float size;
     //lifeTimeLeft,initialLifeTime;
     QMatrix4x4 modelMatrix;
 };
