@@ -45,48 +45,37 @@ void Banc::anime(float dt){
         nbvoisinage=nbvoisin;
 
         // fear the box
-        for(int k=0; k<10;k++){
+
+        for(int k=0; k<1;k++){
             if( largeurAquarium/2    < poissons[i].position.x() + distanceVoisinage){
-                projMur=poissons[i].position;
-                projMur.setX(largeurAquarium/2-1);
-                coefDist=poissons[i].position.distanceToPoint(projMur);
-                tmpSeparation+=projMur/coefDist;
+                coefDist=abs(largeurAquarium/2-poissons[i].position.x());
                 nbvoisinage+=1/coefDist;
+                tmpSeparation+=QVector3D(20,0,0);
             }
-            if(-largeurAquarium/2    > poissons[i].position.x() - distanceVoisinage){
-                projMur=poissons[i].position;
-                projMur.setX(-largeurAquarium/2+1);
-                coefDist=poissons[i].position.distanceToPoint(projMur);
-                tmpSeparation+=projMur/coefDist;
+            else if(-largeurAquarium/2    > poissons[i].position.x() - distanceVoisinage){
+                coefDist=abs(-largeurAquarium/2+poissons[i].position.x());
                 nbvoisinage+=1/coefDist;
+                tmpSeparation+=QVector3D(-20,0,0);
             }
             if( hauteurAquarium/2    < poissons[i].position.y() + distanceVoisinage){
-                projMur=poissons[i].position;
-                projMur.setY(hauteurAquarium/2-1);
-                coefDist=poissons[i].position.distanceToPoint(projMur);
-                tmpSeparation+=projMur/coefDist;
+                coefDist=abs(hauteurAquarium/2-poissons[i].position.y());
                 nbvoisinage+=1/coefDist;
+                tmpSeparation+=QVector3D(0,20,0);
             }
-            if(-hauteurAquarium/2    > poissons[i].position.y() - distanceVoisinage){
-                projMur=poissons[i].position;
-                projMur.setY(-hauteurAquarium/2+1);
-                coefDist=poissons[i].position.distanceToPoint(projMur);
-                tmpSeparation+=projMur/coefDist;
+            else if(-hauteurAquarium/2    > poissons[i].position.y() - distanceVoisinage){
+                coefDist=abs(-hauteurAquarium/2+poissons[i].position.y());
                 nbvoisinage+=1/coefDist;
+                tmpSeparation+=QVector3D(0,-20,0);
             }
             if( profondeurAquarium/2 < poissons[i].position.z() + distanceVoisinage){
-                projMur=poissons[i].position;
-                projMur.setZ(profondeurAquarium/2-1);
-                coefDist=poissons[i].position.distanceToPoint(projMur);
-                tmpSeparation+=projMur/coefDist;
+                coefDist=abs(profondeurAquarium/2-poissons[i].position.z());
                 nbvoisinage+=1/coefDist;
+                tmpSeparation+=QVector3D(0,0,20);
             }
-            if(-profondeurAquarium/2 > poissons[i].position.z() - distanceVoisinage){
-                projMur=poissons[i].position;
-                projMur.setZ(-profondeurAquarium/2+1);
-                coefDist=poissons[i].position.distanceToPoint(projMur);
-                tmpSeparation+=projMur/coefDist;
+            else if(-profondeurAquarium/2 > poissons[i].position.z() - distanceVoisinage){
+                coefDist=abs(-profondeurAquarium/2+poissons[i].position.z());
                 nbvoisinage+=1/coefDist;
+                tmpSeparation+=QVector3D(0,0,-20);
             }
         }
 
