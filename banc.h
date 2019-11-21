@@ -16,10 +16,11 @@ public:
 
 
     int nbPoissons = 0;
-    float vitesseMax = 10;
-    float poidsSeparation=1.5;
-    float poidsAlignement=1;
-    float poidsCohesion=1;
+    float vitessePoisson = 30;
+    float poidsSeparation=1.5f/10;
+    float poidsAlignement=1.0f/10;
+    float poidsCohesion=1.0f/10;
+    float poidsPrecedent=5.5f/10;
     int distanceVoisinage=5;
     std::vector<Poisson> poissons;
 

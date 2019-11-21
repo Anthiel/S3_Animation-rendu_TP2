@@ -6,7 +6,7 @@ Banc::Banc(int nbPoissons, double largeur, double hauteur, double profondeur)
     this->largeurAquarium=largeur;
     this->hauteurAquarium=hauteur;
     this->profondeurAquarium=profondeur;
-    initPoissons(QVector3D(0.0, 0.0, 0.0), 2.0,100);
+    initPoissons(QVector3D(0.0, 0.0, 0.0), 5.0,100);
 }
 
 void Banc::initPoissons(QVector3D vitesse, float size, float coefPrecision){
@@ -25,8 +25,8 @@ void Banc::initPoissons(QVector3D vitesse, float size, float coefPrecision){
 
 void Banc::anime(float dt){
     std::vector<QVector3D> vSeparation, vAlignement, vCohesion;
-    float nbvoisin,nbvoisinage;       //voisinage = voisin + obstacle + predateur
-    float coefDist;
+    double nbvoisin,nbvoisinage;       //voisinage = voisin + obstacle + predateur
+    double coefDist;
     QVector3D tmpSeparation, tmpAlignement, tmpCohesion, projMur;
     for(int i = 0; i < nbPoissons; i++){
         nbvoisin=0;
@@ -35,64 +35,84 @@ void Banc::anime(float dt){
         tmpCohesion=QVector3D(0,0,0);
         for(int j = 0; j < nbPoissons; j++){
             if( i!=j &&poissons[i].dans_voisinage(poissons[j].position, distanceVoisinage)){
-                coefDist=poissons[i].position.distanceToPoint(poissons[j].position);
-                nbvoisin+=1/coefDist;
-                tmpSeparation+=(poissons[j].position-poissons[i].position)/coefDist;
-                tmpAlignement+=(poissons[j].vitesse-poissons[i].vitesse)/coefDist;
-                tmpCohesion+=(poissons[j].position-poissons[i].position)/coefDist;
+                coefDist=(distanceVoisinage-(poissons[i].position.distanceToPoint(poissons[j].position)));
+                //coefDist=1/(poissons[i].position.distanceToPoint(poissons[j].position));
+                nbvoisin+=coefDist;
+
+                tmpSeparation+=(poissons[j].position-poissons[i].position)*coefDist;
+                tmpAlignement+=(poissons[j].vitesse-poissons[i].vitesse)*coefDist;
+                tmpCohesion+=(poissons[j].position-poissons[i].position)*coefDist;
             }
         }
         nbvoisinage=nbvoisin;
 
         // fear the box
-
+        int signe1,signe2;
         for(int k=0; k<1;k++){
             if( largeurAquarium/2    < poissons[i].position.x() + distanceVoisinage){
-                coefDist=abs(largeurAquarium/2-poissons[i].position.x());
-                nbvoisinage+=1/coefDist;
-                tmpSeparation+=QVector3D(20,0,0);
-            }
-            else if(-largeurAquarium/2    > poissons[i].position.x() - distanceVoisinage){
-                coefDist=abs(-largeurAquarium/2+poissons[i].position.x());
-                nbvoisinage+=1/coefDist;
-                tmpSeparation+=QVector3D(-20,0,0);
-            }
-            if( hauteurAquarium/2    < poissons[i].position.y() + distanceVoisinage){
-                coefDist=abs(hauteurAquarium/2-poissons[i].position.y());
-                nbvoisinage+=1/coefDist;
-                tmpSeparation+=QVector3D(0,20,0);
-            }
-            else if(-hauteurAquarium/2    > poissons[i].position.y() - distanceVoisinage){
-                coefDist=abs(-hauteurAquarium/2+poissons[i].position.y());
-                nbvoisinage+=1/coefDist;
-                tmpSeparation+=QVector3D(0,-20,0);
-            }
-            if( profondeurAquarium/2 < poissons[i].position.z() + distanceVoisinage){
-                coefDist=abs(profondeurAquarium/2-poissons[i].position.z());
-                nbvoisinage+=1/coefDist;
-                tmpSeparation+=QVector3D(0,0,20);
-            }
-            else if(-profondeurAquarium/2 > poissons[i].position.z() - distanceVoisinage){
-                coefDist=abs(-profondeurAquarium/2+poissons[i].position.z());
-                nbvoisinage+=1/coefDist;
-                tmpSeparation+=QVector3D(0,0,-20);
+                coefDist=std::max(distanceVoisinage -(largeurAquarium/2-poissons[i].position.x() ),0.0);
+                nbvoisinage+=coefDist;
+                signe1=1;signe2=1;
+                if(poissons[i].position.y()>0) signe1=-1;
+                if(poissons[i].position.z()>0) signe2=-1;
+                tmpSeparation+=QVector3D(1,0.1*signe1,0.1*signe2)*(coefDist)*(1+nbvoisin/3.0);
+
+            } if(-largeurAquarium/2    > poissons[i].position.x() - distanceVoisinage){
+                coefDist=std::max(distanceVoisinage -(largeurAquarium/2+poissons[i].position.x() ),0.0);
+                nbvoisinage+=coefDist;
+                signe1=1;signe2=1;
+                if(poissons[i].position.y()<0) signe1=-1;
+                if(poissons[i].position.z()<0) signe2=-1;
+                tmpSeparation+=QVector3D(-1,0.1*signe1,0.1*signe2)*(coefDist)*(1+nbvoisin/3.0);
+
+            }if( hauteurAquarium/2    < poissons[i].position.y() + distanceVoisinage){
+                coefDist=std::max(distanceVoisinage -(hauteurAquarium/2-poissons[i].position.y() ),0.0);
+                nbvoisinage+=coefDist;
+                signe1=1;signe2=1;
+                if(poissons[i].position.x()<0) signe1=-1;
+                if(poissons[i].position.z()<0) signe2=-1;
+                tmpSeparation+=QVector3D(0.1*signe1,1,0.1*signe2)*(coefDist)*(1+nbvoisin/3.0);
+
+            }if(-hauteurAquarium/2    > poissons[i].position.y() - distanceVoisinage){
+                coefDist=std::max(distanceVoisinage -(hauteurAquarium/2+poissons[i].position.y() ),0.0);
+                nbvoisinage+=coefDist;
+                signe1=1;signe2=1;
+                if(poissons[i].position.x()<0) signe1=-1;
+                if(poissons[i].position.z()<0) signe2=-1;
+                tmpSeparation+=QVector3D(0.1*signe1,-1,0.1*signe2)*(coefDist)*(1+nbvoisin/3.0);
+
+            }if( profondeurAquarium/2 < poissons[i].position.z() + distanceVoisinage){
+                coefDist=std::max(distanceVoisinage -(profondeurAquarium/2-poissons[i].position.z() ),0.0);
+                nbvoisinage+=coefDist;
+                signe1=1;signe2=1;
+                if(poissons[i].position.x()<0) signe1=-1;
+                if(poissons[i].position.y()<0) signe2=-1;
+                tmpSeparation+=QVector3D(0.1*signe1,0.1*signe2,1)*(coefDist)*(1+nbvoisin/3.0);
+
+            } if(-profondeurAquarium/2 > poissons[i].position.z() - distanceVoisinage){
+                coefDist=std::max(distanceVoisinage -(profondeurAquarium/2+poissons[i].position.z() ),0.0);
+                nbvoisinage+=coefDist;
+                signe1=1;signe2=1;
+                if(poissons[i].position.x()<0) signe1=-1;
+                if(poissons[i].position.y()<0) signe2=-1;
+                tmpSeparation+=QVector3D(0.1*signe1,0.1*signe2,-1)*(coefDist)*(1+nbvoisin/3.0);
             }
         }
 
         //faire des truc pour separation
 
         if(nbvoisin!=0){
-            tmpSeparation/=nbvoisinage;
             tmpAlignement/=nbvoisin;
             tmpCohesion/=nbvoisin;
 
-
-            tmpSeparation=-(tmpSeparation);
-
-
-            tmpSeparation.normalize();
             tmpAlignement.normalize();
             tmpCohesion.normalize();
+        }
+        if(nbvoisinage !=0){
+
+            tmpSeparation/=nbvoisinage;
+            tmpSeparation=-(tmpSeparation);
+            tmpSeparation.normalize();
         }
 
         vSeparation.push_back(tmpSeparation);
@@ -101,9 +121,20 @@ void Banc::anime(float dt){
     }
 
     for(int i = 0; i < nbPoissons; i++){
-        poissons[i].vitesse= poissons[i].vitesse + vSeparation[i] * poidsSeparation + vAlignement[i] * poidsAlignement +  vCohesion[i] * poidsCohesion;
-        poissons[i].vitesse.normalize();
-        poissons[i].vitesse*=vitesseMax;
+        QVector3D vitessePrecedent=poissons[i].vitesse;
+        vitessePrecedent.normalize();
+        poissons[i].vitesse= vitessePrecedent * poidsPrecedent + vSeparation[i] * poidsSeparation + vAlignement[i] * poidsAlignement +  vCohesion[i] * poidsCohesion;
+
+        if(poissons[i].vitesse.length()>1){
+            poissons[i].vitesse.normalize();
+        }
+        poissons[i].vitesse*=vitessePoisson;
+
+
+
+
+
+
         poissons[i].animate(dt);
     }
 
