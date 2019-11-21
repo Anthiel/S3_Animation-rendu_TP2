@@ -26,7 +26,7 @@ void Banc::initPoissons(QVector3D vitesse, float size, float coefPrecision){
 void Banc::anime(float dt){
     std::vector<QVector3D> vSeparation, vAlignement, vCohesion;
     double nbvoisin,nbvoisinage;       //voisinage = voisin + obstacle + predateur
-    double coefDist;
+    double coefDist,coefVoisinage;
     QVector3D tmpSeparation, tmpAlignement, tmpCohesion, projMur;
     for(int i = 0; i < nbPoissons; i++){
         nbvoisin=0;
@@ -48,6 +48,7 @@ void Banc::anime(float dt){
 
         // fear the box
         int signe1,signe2;
+        coefVoisinage=1+nbvoisin/2.0;
         for(int k=0; k<1;k++){
             if( largeurAquarium/2    < poissons[i].position.x() + distanceVoisinage){
                 coefDist=std::max(distanceVoisinage -(largeurAquarium/2-poissons[i].position.x() ),0.0);
@@ -55,7 +56,7 @@ void Banc::anime(float dt){
                 signe1=1;signe2=1;
                 if(poissons[i].position.y()>0) signe1=-1;
                 if(poissons[i].position.z()>0) signe2=-1;
-                tmpSeparation+=QVector3D(1,0.1*signe1,0.1*signe2)*(coefDist)*(1+nbvoisin/3.0);
+                tmpSeparation+=QVector3D(1,0.1*signe1,0.1*signe2)*(coefDist)*(coefVoisinage);
 
             } if(-largeurAquarium/2    > poissons[i].position.x() - distanceVoisinage){
                 coefDist=std::max(distanceVoisinage -(largeurAquarium/2+poissons[i].position.x() ),0.0);
@@ -63,7 +64,7 @@ void Banc::anime(float dt){
                 signe1=1;signe2=1;
                 if(poissons[i].position.y()<0) signe1=-1;
                 if(poissons[i].position.z()<0) signe2=-1;
-                tmpSeparation+=QVector3D(-1,0.1*signe1,0.1*signe2)*(coefDist)*(1+nbvoisin/3.0);
+                tmpSeparation+=QVector3D(-1,0.1*signe1,0.1*signe2)*(coefDist)*(coefVoisinage);
 
             }if( hauteurAquarium/2    < poissons[i].position.y() + distanceVoisinage){
                 coefDist=std::max(distanceVoisinage -(hauteurAquarium/2-poissons[i].position.y() ),0.0);
@@ -71,7 +72,7 @@ void Banc::anime(float dt){
                 signe1=1;signe2=1;
                 if(poissons[i].position.x()<0) signe1=-1;
                 if(poissons[i].position.z()<0) signe2=-1;
-                tmpSeparation+=QVector3D(0.1*signe1,1,0.1*signe2)*(coefDist)*(1+nbvoisin/3.0);
+                tmpSeparation+=QVector3D(0.1*signe1,1,0.1*signe2)*(coefDist)*(coefVoisinage);
 
             }if(-hauteurAquarium/2    > poissons[i].position.y() - distanceVoisinage){
                 coefDist=std::max(distanceVoisinage -(hauteurAquarium/2+poissons[i].position.y() ),0.0);
@@ -79,7 +80,7 @@ void Banc::anime(float dt){
                 signe1=1;signe2=1;
                 if(poissons[i].position.x()<0) signe1=-1;
                 if(poissons[i].position.z()<0) signe2=-1;
-                tmpSeparation+=QVector3D(0.1*signe1,-1,0.1*signe2)*(coefDist)*(1+nbvoisin/3.0);
+                tmpSeparation+=QVector3D(0.1*signe1,-1,0.1*signe2)*(coefDist)*(coefVoisinage);
 
             }if( profondeurAquarium/2 < poissons[i].position.z() + distanceVoisinage){
                 coefDist=std::max(distanceVoisinage -(profondeurAquarium/2-poissons[i].position.z() ),0.0);
@@ -87,7 +88,7 @@ void Banc::anime(float dt){
                 signe1=1;signe2=1;
                 if(poissons[i].position.x()<0) signe1=-1;
                 if(poissons[i].position.y()<0) signe2=-1;
-                tmpSeparation+=QVector3D(0.1*signe1,0.1*signe2,1)*(coefDist)*(1+nbvoisin/3.0);
+                tmpSeparation+=QVector3D(0.1*signe1,0.1*signe2,1)*(coefDist)*(coefVoisinage);
 
             } if(-profondeurAquarium/2 > poissons[i].position.z() - distanceVoisinage){
                 coefDist=std::max(distanceVoisinage -(profondeurAquarium/2+poissons[i].position.z() ),0.0);
@@ -95,7 +96,7 @@ void Banc::anime(float dt){
                 signe1=1;signe2=1;
                 if(poissons[i].position.x()<0) signe1=-1;
                 if(poissons[i].position.y()<0) signe2=-1;
-                tmpSeparation+=QVector3D(0.1*signe1,0.1*signe2,-1)*(coefDist)*(1+nbvoisin/3.0);
+                tmpSeparation+=QVector3D(0.1*signe1,0.1*signe2,-1)*(coefDist)*(coefVoisinage);
             }
         }
 
