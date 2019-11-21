@@ -13,6 +13,10 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 TARGET = tp01
 TEMPLATE = app
 
+win32{
+    LIBS += -lGLU32\
+        -lOpengl32
+}
 
 SOURCES += main.cpp\
         princ.cpp \
