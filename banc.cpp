@@ -48,7 +48,7 @@ void Banc::anime(float dt){
 
         // fear the box
         int signe1,signe2;
-        coefVoisinage=1+nbvoisin/2.0;
+        coefVoisinage=1+(1*nbvoisin)/2.0f;
         for(int k=0; k<1;k++){
             if( largeurAquarium/2    < poissons[i].position.x() + distanceVoisinage){
                 coefDist=std::max(distanceVoisinage -(largeurAquarium/2-poissons[i].position.x() ),0.0);

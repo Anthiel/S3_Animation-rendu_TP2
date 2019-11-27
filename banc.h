@@ -19,7 +19,7 @@ public:
     float vitessePoisson = 20;
     float poidsSeparation=1.5f/12;
     float poidsAlignement=1.0f/12;
-    float poidsCohesion=1.3f/12;
+    float poidsCohesion=1.32f/12;
     float poidsPrecedent=8.2f/12;
     int distanceVoisinage=6;
     std::vector<Poisson> poissons;
