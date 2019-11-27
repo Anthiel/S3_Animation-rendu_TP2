@@ -54,8 +54,8 @@ void Banc::anime(float dt){
                 coefDist=std::max(distanceVoisinage -(largeurAquarium/2-poissons[i].position.x() ),0.0);
                 nbvoisinage+=coefDist;
                 signe1=1;signe2=1;
-                if(poissons[i].position.y()>0) signe1=-1;
-                if(poissons[i].position.z()>0) signe2=-1;
+                if(poissons[i].position.y()<0) signe1=-1;
+                if(poissons[i].position.z()<0) signe2=-1;
                 tmpSeparation+=QVector3D(1,0.1*signe1,0.1*signe2)*(coefDist)*(coefVoisinage);
 
             } if(-largeurAquarium/2    > poissons[i].position.x() - distanceVoisinage){

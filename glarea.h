@@ -52,7 +52,7 @@ private:
     QOpenGLBuffer vbo_poisson;
     QOpenGLTexture *textures[2];
 
-    Banc banc = Banc(500,50,55,60);
+    Banc banc = Banc(1000,50,55,60);
     void makeGLObjects();
     void tearGLObjects();
 };
